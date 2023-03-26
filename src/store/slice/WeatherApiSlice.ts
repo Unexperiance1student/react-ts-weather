@@ -1,38 +1,28 @@
+import { cityInfType, forecastParams, WeatherState } from '../../helpers/types'
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import axios, { AxiosError } from 'axios'
 
-export interface CounterState {
-  value: number
-}
-type WeatherInf = {
-  message: string
-}
+const BASE_URL = 'http://api.openweathermap.org'
 
-export const fetchWeather = createAsyncThunk<
-  WeatherInf,
-  undefined,
+export const searchCity = createAsyncThunk<
+  cityInfType[],
+  string,
   { rejectValue: string }
 >(
-  'weather/getWeather',
+  'weather/searchCity',
 
-  async (_, { rejectWithValue }) => {
-    // const res = await axios.get(`https://jsonplaceholder.typicode.com/todos/1`)
-    // console.log(res)
-    // if (res.data.length === 0) {
-    //   console.log(res)
-    //   return rejectWithValue('Failed to fetch todos.')
-    // }
-    // return res.data
+  async (term, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `https://jsonplaceholder.typicode.com/atodos/1`
+        `${BASE_URL}/geo/1.0/direct?q=${term.trim()}&limit=5&lang=en&appid=${
+          process.env.REACT_APP_API_KEY
+        }`
       )
       const { data } = response
       return data
     } catch (err) {
       const error: AxiosError<string> = err as any
       if (!error.response) {
-        console.log(err)
         throw err
       }
       return rejectWithValue(error.message)
@@ -40,27 +30,59 @@ export const fetchWeather = createAsyncThunk<
   }
 )
 
-const initialState: CounterState = {
-  value: 0,
+export const searchForecast = createAsyncThunk<
+  cityInfType[],
+  forecastParams,
+  { rejectValue: string }
+>(
+  'weather/searchForecast',
+
+  async ({ lat, lon }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&lang=en&appid=${process.env.REACT_APP_API_KEY}`
+      )
+      const { data } = response
+      return data
+    } catch (err) {
+      const error: AxiosError<string> = err as any
+      if (!error.response) {
+        throw err
+      }
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+const initialState: WeatherState = {
+  isLoading: null,
+  isError: null,
+  cityWeather: [],
 }
 
 export const WeatherApiSlice = createSlice({
   name: 'weather',
   initialState,
   reducers: {
-    changeIncrementAmount: (state, action: PayloadAction<number>) => {},
+    // changeIncrementAmount: (state, action: PayloadAction<number>) => {},
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchWeather.fulfilled, (state, action) => {
-        // console.log(action)
+      .addCase(searchCity.pending, (state, action) => {
+        state.isLoading = true
       })
-      .addCase(fetchWeather.rejected, (state, action) => {
-        console.log(action)
+      .addCase(searchCity.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.cityWeather = action.payload
+        console.log(action.payload)
+      })
+      .addCase(searchCity.rejected, (state, action) => {
+        state.isLoading = false
+        if (action.payload) state.isError = action.payload
       })
   },
 })
 
-export const { changeIncrementAmount } = WeatherApiSlice.actions
+export const {} = WeatherApiSlice.actions
 
 export default WeatherApiSlice.reducer
