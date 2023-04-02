@@ -1,4 +1,9 @@
-import { cityInfType, forecastParams, WeatherState } from '../../helpers/types'
+import {
+  cityInfType,
+  forecastParams,
+  forecastType,
+  WeatherState,
+} from '../../helpers/types'
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
 import axios, { AxiosError } from 'axios'
 
@@ -31,7 +36,7 @@ export const searchCity = createAsyncThunk<
 )
 
 export const searchForecast = createAsyncThunk<
-  cityInfType[],
+  forecastType,
   forecastParams,
   { rejectValue: string }
 >(
@@ -40,7 +45,7 @@ export const searchForecast = createAsyncThunk<
   async ({ lat, lon }, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/data/3.0/onecall?lat=${lat}&lon=${lon}&units=metric&lang=en&appid=${process.env.REACT_APP_API_KEY}`
+        `${BASE_URL}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=en&appid=${process.env.REACT_APP_API_KEY}`
       )
       const { data } = response
       return data
@@ -58,6 +63,7 @@ const initialState: WeatherState = {
   isLoading: null,
   isError: null,
   cityWeather: [],
+  forecastList: null,
 }
 
 export const WeatherApiSlice = createSlice({
@@ -77,6 +83,18 @@ export const WeatherApiSlice = createSlice({
         console.log(action.payload)
       })
       .addCase(searchCity.rejected, (state, action) => {
+        state.isLoading = false
+        if (action.payload) state.isError = action.payload
+      })
+      .addCase(searchForecast.pending, (state, action) => {
+        state.isLoading = true
+      })
+      .addCase(searchForecast.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.forecastList = action.payload
+        console.log(action.payload)
+      })
+      .addCase(searchForecast.rejected, (state, action) => {
         state.isLoading = false
         if (action.payload) state.isError = action.payload
       })
