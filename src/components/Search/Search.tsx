@@ -1,5 +1,7 @@
 import { FC } from 'react'
 import { SearchProps, cityInfType } from '../../helpers/types'
+import { useAppSelector } from '../../helpers/hooks'
+import { weatherSelector } from '../../store/selectors/WeatherSelector'
 
 const Search: FC<SearchProps> = ({
   term,
@@ -8,6 +10,8 @@ const Search: FC<SearchProps> = ({
   onOptionSelect,
   onSubmit,
 }) => {
+  const { isSearchLoading } = useAppSelector(weatherSelector)
+
   return (
     <section className="flex flex-col items-center justify-center w-full md:max-w-[500px] py-4 md:py-4 md:px-10 lg:px-24 h-full lg:h-auto bg-white bg-opacity-20 backdrop-blur-ls rounded drop-shadow-lg">
       <h1 className="text-4xl font-thin">
@@ -25,16 +29,17 @@ const Search: FC<SearchProps> = ({
           className="px-2 py-1 rounded-l-md border-2 border-white "
         />
         <ul className="absolute top-9 bg-white ml-1 rounded-b-md">
-          {options.map((option: cityInfType, index: number) => (
-            <li key={option.name + '-' + index}>
-              <button
-                onClick={() => onOptionSelect(option)}
-                className="text-left text-sm w-full hover:bg-zinc-700 hover:text-white px-2 py-1 cursor-pointer"
-              >
-                {option.name}
-              </button>
-            </li>
-          ))}
+          {!isSearchLoading &&
+            options.map((option: cityInfType, index: number) => (
+              <li key={option.name + '-' + index}>
+                <button
+                  onClick={() => onOptionSelect(option)}
+                  className="text-left text-sm w-full hover:bg-zinc-700 hover:text-white px-2 py-1 cursor-pointer"
+                >
+                  {option.name}
+                </button>
+              </li>
+            ))}
         </ul>
         <button
           onClick={onSubmit}

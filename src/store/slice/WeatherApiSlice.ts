@@ -48,7 +48,11 @@ export const searchForecast = createAsyncThunk<
         `${BASE_URL}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=en&appid=${process.env.REACT_APP_API_KEY}`
       )
       const { data } = response
-      return data
+      const forecastData = {
+        ...data.city,
+        list: data.list.slice(0, 16),
+      }
+      return forecastData
     } catch (err) {
       const error: AxiosError<string> = err as any
       if (!error.response) {
@@ -60,7 +64,8 @@ export const searchForecast = createAsyncThunk<
 )
 
 const initialState: WeatherState = {
-  isLoading: null,
+  isSearchLoading: null,
+  isForecastLoading: null,
   isError: null,
   cityWeather: [],
   forecastList: null,
@@ -75,27 +80,27 @@ export const WeatherApiSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(searchCity.pending, (state, action) => {
-        state.isLoading = true
+        state.isSearchLoading = true
       })
       .addCase(searchCity.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.isSearchLoading = false
         state.cityWeather = action.payload
         console.log(action.payload)
       })
       .addCase(searchCity.rejected, (state, action) => {
-        state.isLoading = false
+        state.isSearchLoading = false
         if (action.payload) state.isError = action.payload
       })
       .addCase(searchForecast.pending, (state, action) => {
-        state.isLoading = true
+        state.isForecastLoading = true
       })
       .addCase(searchForecast.fulfilled, (state, action) => {
-        state.isLoading = false
+        state.isForecastLoading = false
         state.forecastList = action.payload
         console.log(action.payload)
       })
       .addCase(searchForecast.rejected, (state, action) => {
-        state.isLoading = false
+        state.isForecastLoading = false
         if (action.payload) state.isError = action.payload
       })
   },

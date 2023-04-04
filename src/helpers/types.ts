@@ -8,10 +8,14 @@ export type cityInfType = {
 }
 
 export interface WeatherState {
-  isLoading: boolean | null
+  isSearchLoading: boolean | null
+  isForecastLoading: boolean | null
   isError: string | null
   cityWeather: cityInfType[]
   forecastList: forecastType | null
+}
+export interface ForecastProps {
+  forecast: forecastType
 }
 
 export type forecastParams = {
