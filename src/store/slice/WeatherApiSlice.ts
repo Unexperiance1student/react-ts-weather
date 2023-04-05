@@ -4,7 +4,7 @@ import {
   forecastType,
   WeatherState,
 } from '../../helpers/types'
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios, { AxiosError } from 'axios'
 
 const BASE_URL = 'http://api.openweathermap.org'
@@ -74,9 +74,7 @@ const initialState: WeatherState = {
 export const WeatherApiSlice = createSlice({
   name: 'weather',
   initialState,
-  reducers: {
-    // changeIncrementAmount: (state, action: PayloadAction<number>) => {},
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(searchCity.pending, (state, action) => {
@@ -85,7 +83,6 @@ export const WeatherApiSlice = createSlice({
       .addCase(searchCity.fulfilled, (state, action) => {
         state.isSearchLoading = false
         state.cityWeather = action.payload
-        console.log(action.payload)
       })
       .addCase(searchCity.rejected, (state, action) => {
         state.isSearchLoading = false
@@ -97,7 +94,6 @@ export const WeatherApiSlice = createSlice({
       .addCase(searchForecast.fulfilled, (state, action) => {
         state.isForecastLoading = false
         state.forecastList = action.payload
-        console.log(action.payload)
       })
       .addCase(searchForecast.rejected, (state, action) => {
         state.isForecastLoading = false

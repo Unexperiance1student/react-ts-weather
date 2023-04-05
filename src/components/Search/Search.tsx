@@ -13,7 +13,7 @@ const Search: FC<SearchProps> = ({
   const { isSearchLoading } = useAppSelector(weatherSelector)
 
   return (
-    <section className="flex flex-col items-center justify-center w-full md:max-w-[500px] py-4 md:py-4 md:px-10 lg:px-24 h-full lg:h-auto bg-white bg-opacity-20 backdrop-blur-ls rounded drop-shadow-lg">
+    <section className="flex flex-col items-center justify-center w-full md:max-w-[500px] py-4 md:py-4 md:px-10 lg:px-24 h-full lg:h-auto bg-white bg-opacity-20 backdrop-blur-lg rounded drop-shadow-lg">
       <h1 className="text-4xl font-thin">
         Weather <span className="font-black">Forecast</span>
       </h1>

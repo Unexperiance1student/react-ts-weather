@@ -22,7 +22,6 @@ const useForecast = () => {
   }
   const onSubmit = () => {
     if (!city) return
-
     getForecast(city)
   }
 
